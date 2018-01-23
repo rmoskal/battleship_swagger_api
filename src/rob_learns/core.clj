@@ -3,7 +3,7 @@
   (:require [rob-learns.helpers :refer :all]
             [failjure.core :as f]))
 
-(declare place-on-board get-coordinates-horizontal, validate-move)
+(declare place-on-board get-coordinates-horizontal, validate-moves, is-on-board?)
 (def fleet {:submarine  1
             :destroyer  2
             :cruiser    3
@@ -20,21 +20,25 @@
   "place a ship horizontally"
   [fleet board x y ship]
   (let [result (f/ok->> ship
-       (#(fleet (keyword %)))
-       (get-coordinates-horizontal x y)
-       (p-print)
-       ((partial validate-move board))
-       (reduce (fn [a each] (place-on-board a each ship)) board)
-       )]
+                        (#(fleet (keyword %)))
+                        (get-coordinates-horizontal x y)
+                        ;(p-print)
+                        ((partial validate-moves board))
+                        (reduce (fn [a each] (place-on-board a each ship)) board)
+                        )]
 
-        (when (f/failed? result))
-        result
-        )
+    (when (f/failed? result))
+    result
+    )
 
   )
 
-(defn validate-move
-  [board [x y]]
+(defn validate-moves
+  [board coords]
+  (pprint coords)
+  (map #(
+
+          ))
   (f/fail "Hello, %s" "Failjure")
   )
 
@@ -53,14 +57,16 @@
 (defn is-on-board?
   "Checks whether a coordinate is on board"
   [board [x y]]
-  (if (get-in board [x y]) true false)
+  (if (get-in board [x y]) [x y]
+                           (f/fail "%s %s  is not on board" x y))
   )
 
 (defn is-not-taken?
   "Checks whether a coordinate is taken"
   [board [x y]]
-  (if (= "0" (get-in board [x y])) true false)
-  )
+  (if (= "0" (get-in board [x y])) [x y]
+                                   (f/fail "%s %s  is not on board" x y)
+                                   ))
 
 (defn place-on-board
   "Place a ship on the board"

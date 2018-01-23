@@ -7,3 +7,9 @@
   (if (fn val)
     val
     (f/fail message val)))
+
+(defn p-print
+  [_in]
+  (pprint _in)
+  _in
+  )
