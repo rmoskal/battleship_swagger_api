@@ -3,7 +3,7 @@
   (:require [rob-learns.helpers :refer :all]
             [failjure.core :as f]))
 
-(declare place-on-board get-coordinates-horizontal, validate-moves, is-on-board?)
+(declare place-on-board , validate-moves, validate-move is-on-board is-not-taken)
 (def fleet {:submarine  1
             :destroyer  2
             :cruiser    3
@@ -16,52 +16,62 @@
   (vec (repeat 10 (vec (repeat 10 "0")))))
 
 
-(defn place-ship-horizontally
+(defn place-ship
   "place a ship horizontally"
-  [fleet board x y ship]
-  (let [result (f/ok->> ship
-                        (#(fleet (keyword %)))
-                        (get-coordinates-horizontal x y)
-                        ;(p-print)
-                        ((partial validate-moves board))
-                        (reduce (fn [a each] (place-on-board a each ship)) board)
-                        )]
+  [function fleet board x y ship]
+  (f/ok->> ship
+           (#(fleet (keyword %)))
+           (function x y)
+           ((partial validate-moves board))
+           (reduce (fn [a each] (place-on-board a each ship)) board)
+           )
+  )
 
-    (when (f/failed? result))
-    result
-    )
-
+(defn attack
+  "Attack the board"
+  [board [x y]]
+  (f/ok->> [x y]
+           (is-on-board board)
+           )
   )
 
 (defn validate-moves
   [board coords]
-  (pprint coords)
-  (map #(
-
-          ))
-  (f/fail "Hello, %s" "Failjure")
+  (let [result (
+                 map (partial validate-move board) coords
+                     )]
+    (if (f/failed? (have-failure result)) (have-failure result) result)
+    )
   )
 
-(defn get-coordinates-horizontal
+(defn validate-move
+  [board [x y]]
+  (f/ok->> [x y]
+           (is-not-taken board)
+           (is-on-board board)
+           )
+  )
+
+(defn get-coordinates-h
   "Get the horizontal coordinates for placing ship"
   [x y length]
   (map #(vec [y %]) (range x (+ x length)))
   )
 
-(defn get-coordinates-vertical
+(defn get-coordinates-v
   "Get the horizontal  coordinates for placing ship"
   [x y length]
   (map #(vec [% x]) (range y (+ y length)))
   )
 
-(defn is-on-board?
+(defn is-on-board
   "Checks whether a coordinate is on board"
   [board [x y]]
   (if (get-in board [x y]) [x y]
                            (f/fail "%s %s  is not on board" x y))
   )
 
-(defn is-not-taken?
+(defn is-not-taken
   "Checks whether a coordinate is taken"
   [board [x y]]
   (if (= "0" (get-in board [x y])) [x y]
@@ -74,6 +84,4 @@
   (assoc-in board [x y] ship)
   )
 
-
-
-(println (place-ship-horizontally fleet (make-board) 1 0 "destroyer"))
+(pprint (attack (make-board) [1 1]))
