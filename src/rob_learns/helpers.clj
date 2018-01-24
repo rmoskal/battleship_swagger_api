@@ -19,3 +19,12 @@
   (pprint _in)
   _in
   )
+
+(defn validate-many
+  "Allows you to map over a series of values and to test them using failjure
+  It returns the first error found. It seems to me that this must be unidiomatic"
+  [validator coll]
+  (let [result (map validator coll)]
+    (if (f/failed? (have-failure result)) (have-failure result) result)
+    )
+  )

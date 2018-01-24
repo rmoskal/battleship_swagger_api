@@ -3,7 +3,7 @@
   (:require [rob-learns.helpers :refer :all]
             [failjure.core :as f]))
 
-(declare place-on-board , validate-moves, validate-move is-on-board is-not-taken)
+(declare place-on-board  is-on-board is-not-taken validate-move)
 (def fleet {:submarine  1
             :destroyer  2
             :cruiser    3
@@ -22,7 +22,7 @@
   (f/ok->> ship
            (#(fleet (keyword %)))
            (function x y)
-           ((partial validate-moves board))
+           ((partial validate-many (partial validate-move board)))
            (reduce (fn [a each] (place-on-board a each ship)) board)
            )
   )
@@ -35,14 +35,6 @@
            )
   )
 
-(defn validate-moves
-  [board coords]
-  (let [result (
-                 map (partial validate-move board) coords
-                     )]
-    (if (f/failed? (have-failure result)) (have-failure result) result)
-    )
-  )
 
 (defn validate-move
   [board [x y]]
