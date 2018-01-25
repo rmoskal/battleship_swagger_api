@@ -1,19 +1,18 @@
 (ns rob-learns.core
   (:use clojure.pprint)
   (:require [rob-learns.helpers :refer :all]
-            [failjure.core :as f]))
+            [failjure.core :as f]
+            [rob-learns.core :refer :all]))
 
 (declare place-on-board  is-on-board is-not-taken validate-move)
-(def fleet {:submarine  1
+
+(defn fleet
+  []
+  {:submarine  1
             :destroyer  2
             :cruiser    3
             :battleship 4
             :carrier    5})
-
-(defn make-board
-  "I make a 2 d array loaded with 0s"
-  []
-  (vec (repeat 10 (vec (repeat 10 "0")))))
 
 
 (defn place-ship
@@ -27,13 +26,21 @@
            )
   )
 
+
+
 (defn attack
   "Attack the board"
   [board [x y]]
   (f/ok->> [x y]
            (is-on-board board)
+
            )
   )
+
+(defn make-board
+  "I make a 2 d array loaded with 0s"
+  []
+  (vec (repeat 10 (vec (repeat 10 "0")))))
 
 
 (defn validate-move

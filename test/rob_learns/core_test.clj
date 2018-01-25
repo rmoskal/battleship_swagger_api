@@ -6,7 +6,7 @@
 
 (deftest main-test
   (testing "The whole magilla"
-    (let [board (place-ship get-coordinates-h fleet (make-board) 1 0 "destroyer")]
+    (let [board (place-ship get-coordinates-h (fleet) (make-board) 1 0 "destroyer")]
       (is (= "destroyer" (get-in (first board) [1])) "got first one right")
       (is (= "destroyer" (get-in (first board) [2])) "got first one right")
 
