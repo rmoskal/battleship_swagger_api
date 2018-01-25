@@ -8,9 +8,11 @@
 (def player_1 (atom nil))
 (def player_2 (atom nil))
 
+(def direction {:left get-coordinates-h :right get-coordinates-v})
+
 
 (defn set-game-state
-  [player board, fleet, msg]
+  [player fleet msg board]
   (reset! player {:board board :fleet fleet :msg msg })
 
   )
@@ -21,20 +23,29 @@
 
 (defn initialize-game
   []
-  (set-game-state player_1 (make-board) (fleet) nil)
-  (set-game-state player_2 (make-board) (fleet) nil)
+  (set-game-state player_1  (fleet) nil (make-board))
+  (set-game-state player_2  (fleet) nil (make-board))
   )
 
 (defn place-move
-  [state]
-  ()
+  [state ship direction x y]
+  ;(pprint [direction (:fleet @state) (:board @state)])
+  (f/ok->> ship
+           ((partial place-ship direction (:fleet @state) (:board @state) x y))
+           ((partial set-game-state state (dissoc (:fleet @state) (keyword ship))
+                     "Placed a piece." ))
+           )
   )
 
 
-
 (initialize-game)
+(place-move player_1 "destroyer"  get-coordinates-h 0 1)
+(place-move player_1 "destroyer"  get-coordinates-h 0 1)
 
-(pprint player_2)
+
+(pprint player_1)
+
+;(pprint(place-ship get-coordinates-h (:fleet @player_1) (:board @player_1) 0 1"destroyer"))
 
 
 
