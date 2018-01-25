@@ -4,7 +4,7 @@
             [failjure.core :as f]
             [rob-learns.core :refer :all]))
 
-(declare place-on-board  is-on-board is-not-taken validate-move)
+(declare place-on-board  is-on-board is-not-taken validate-move, validate-placed)
 
 (defn fleet
   []
@@ -19,7 +19,7 @@
   "place a ship horizontally"
   [function fleet board x y ship]
   (f/ok->> ship
-           (#(fleet (keyword %)))
+           ((partial validate-placed fleet))
            (function x y)
            ((partial validate-many (partial validate-move board)))
            (reduce (fn [a each] (place-on-board a each ship)) board)
@@ -70,6 +70,12 @@
                            (f/fail "%s %s  is not on board" x y))
   )
 
+(defn validate-placed
+  [fleet ship]
+  (if (fleet (keyword ship))(fleet (keyword ship))
+                                    (f/fail "%s is already place" ship))
+  )
+
 (defn is-not-taken
   "Checks whether a coordinate is taken"
   [board [x y]]
@@ -83,4 +89,4 @@
   (assoc-in board [x y] ship)
   )
 
-(pprint (attack (make-board) [1 1]))
+;(pprint (attack (make-board) [1 1]))

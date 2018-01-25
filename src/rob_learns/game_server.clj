@@ -30,11 +30,14 @@
 (defn place-move
   [state ship direction x y]
   ;(pprint [direction (:fleet @state) (:board @state)])
+  (let [result
   (f/ok->> ship
            ((partial place-ship direction (:fleet @state) (:board @state) x y))
+           (p-print)
            ((partial set-game-state state (dissoc (:fleet @state) (keyword ship))
                      "Placed a piece." ))
-           )
+           ) ]
+    (if (f/failed? result) pprint "fail"))
   )
 
 
@@ -43,7 +46,7 @@
 (place-move player_1 "destroyer"  get-coordinates-h 0 1)
 
 
-(pprint player_1)
+;(pprint player_1)
 
 ;(pprint(place-ship get-coordinates-h (:fleet @player_1) (:board @player_1) 0 1"destroyer"))
 
