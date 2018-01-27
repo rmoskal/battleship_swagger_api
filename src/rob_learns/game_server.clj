@@ -33,17 +33,16 @@
   (let [result
   (f/ok->> ship
            ((partial place-ship direction (:fleet @state) (:board @state) x y))
-           (p-print)
            ((partial set-game-state state (dissoc (:fleet @state) (keyword ship))
                      "Placed a piece." ))
            ) ]
-    (if (f/failed? result) pprint "fail"))
+    (if (f/failed? result) ()))
   )
 
 
 (initialize-game)
-(place-move player_1 "destroyer"  get-coordinates-h 0 1)
-(place-move player_1 "destroyer"  get-coordinates-h 0 1)
+(pprint(place-move player_1 "destroyer"  get-coordinates-h 0 1))
+(pprint(place-move player_1 "destroyer"  get-coordinates-h 0 1))
 
 
 ;(pprint player_1)
