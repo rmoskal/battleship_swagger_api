@@ -8,14 +8,14 @@
 (def player_1 (atom nil))
 (def player_2 (atom nil))
 
-(def direction {:left get-coordinates-h :right get-coordinates-v})
+(def direction {:h get-coordinates-h :v get-coordinates-v})
 
 
 (defn set-game-state
-  [player fleet msg board]
-  (reset! player {:board board :fleet fleet :msg msg })
+  [player inventory fleet status board]
+  (reset! player {:board board :inventory inventory :fleet fleet :status status}))
 
-  )
+
 
 (defn get-game-state
   [player]
@@ -23,31 +23,38 @@
 
 (defn initialize-game
   []
-  (set-game-state player_1  (fleet) nil (make-board))
-  (set-game-state player_2  (fleet) nil (make-board))
-  )
+  (set-game-state player_1  (fleet) (fleet) nil (make-board))
+  (set-game-state player_2  (fleet) (fleet) nil (make-board)))
+
 
 (defn place-move
   [state ship direction x y]
-  ;(pprint [direction (:fleet @state) (:board @state)])
   (let [result
-  (f/ok->> ship
-           ((partial place-ship direction (:fleet @state) (:board @state) x y))
-           ((partial set-game-state state (dissoc (:fleet @state) (keyword ship))
-                     "Placed a piece." ))
-           ) ]
-    (if (f/failed? result) ()))
-  )
+        (f/ok->> ship
+                 ((partial place-ship direction  (:fleet @state) (:inventory @state) (:board @state) x y))
+                 ((partial set-game-state state (dissoc (:inventory @state) (keyword ship)) (:fleet @state)
+                            {:success"Placed a piece."})))]
+
+    (if (f/failed? (swap! state assoc :status {:error result})) result)))
+
 
 
 (initialize-game)
-(pprint(place-move player_1 "destroyer"  get-coordinates-h 0 1))
-(pprint(place-move player_1 "destroyer"  get-coordinates-h 0 1))
-
-
-;(pprint player_1)
-
-;(pprint(place-ship get-coordinates-h (:fleet @player_1) (:board @player_1) 0 1"destroyer"))
-
+(place-move player_1 "destroyer" (:h direction) 0 1)
+(pprint player_1)
+(place-move player_1 "submarine"  (:h direction) 2 1)
+(pprint player_1)
+(place-move player_1 "carrier"  (:v direction)  0 2)
+(pprint player_1)
+(place-move player_1 "carrier"  (:v direction)  0 2)
+(pprint player_1)
+(place-move player_1 "harrier"  (:v direction)  0 2)
+(pprint player_1)
+(place-move player_1 "cruiser"  (:v direction)  3 2)
+(pprint player_1)
+(place-move player_1 "battleship"  (:h direction) 0 9)
+(pprint player_1)
+(place-move player_1 "battleship"  (:h direction) 0 9)
+(pprint player_1)
 
 

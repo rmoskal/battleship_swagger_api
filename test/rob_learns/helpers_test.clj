@@ -4,6 +4,5 @@
 
 (deftest a-test
   (testing "function is exported"
-    (is (true? (function? failjureize)))
-    )
-  )
+    (is (true? (function? failjureize)))))
+
