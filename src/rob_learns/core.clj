@@ -1,18 +1,20 @@
 (ns rob-learns.core
   (:use clojure.pprint)
+  (:use clojure.core.matrix)
   (:require [rob-learns.helpers :refer :all]
             [failjure.core :as f]
             [rob-learns.core :refer :all]))
 
-(declare place-on-board  is-on-board is-not-taken validate-move, validate-placed validate-placable)
+(declare place-on-board is-on-board is-not-taken validate-move, validate-placed validate-placable shell
+         is-sunk)
 
 (defn fleet
   []
   {:submarine  1
-            :destroyer  2
-            :cruiser    3
-            :battleship 4
-            :carrier    5})
+   :destroyer  2
+   :cruiser    3
+   :battleship 4
+   :carrier    5})
 
 
 (defn place-ship
@@ -27,9 +29,17 @@
 
 (defn attack
   "Attack the board"
-  [board [x y]]
+  [attacker defender [x y]]
   (f/ok->> [x y]
-           (is-on-board board)))
+           (is-on-board (get defender :board))
+           (shell (get defender :board) )
+           (is-sunk (get defender :board))
+           )
+
+  )
+
+
+(defn mark-defender [])
 
 
 (defn make-board
@@ -65,8 +75,8 @@
 
 (defn validate-placed
   [fleet ship]
-  (if (fleet (keyword ship))(fleet (keyword ship))
-                            (f/fail "%s is already place" ship)))
+  (if (fleet (keyword ship)) (fleet (keyword ship))
+                             (f/fail "%s is already place" ship)))
 
 (defn validate-placable
   [inventory ship]
@@ -84,4 +94,21 @@
   (assoc-in board [x y] ship))
 
 
-;(pprint (attack (make-board) [1 1]))
+
+(defn shell
+  "mark a position"
+   [board [x y]]
+  (pprint board)
+  (let [loc (get-in board [y x])]
+    (cond
+    (=  loc "0") false
+    (= loc "1") false
+    :else loc))
+  )
+
+(defn is-sunk
+  [board ship]
+  (not-any? #( = ship %) (flatten board))
+)
+
+
