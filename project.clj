@@ -5,5 +5,4 @@
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [failjure "1.2.0"]
-                 [net.mikera/core.matrix "0.61.0"]
                  ])

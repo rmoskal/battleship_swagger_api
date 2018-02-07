@@ -1,12 +1,11 @@
 (ns rob-learns.core
   (:use clojure.pprint)
-  (:use clojure.core.matrix)
   (:require [rob-learns.helpers :refer :all]
             [failjure.core :as f]
             [rob-learns.core :refer :all]))
 
 (declare place-on-board is-on-board is-not-taken validate-move, validate-placed validate-placable shell
-         is-sunk)
+         mark-sunk mark-defender mark-hit)
 
 (defn fleet
   []
@@ -27,19 +26,28 @@
            ((partial validate-many (partial validate-move board)))
            (reduce (fn [a each] (place-on-board a each ship)) board)))
 
-(defn attack
+(defn attack-defender
   "Attack the board"
-  [attacker defender [x y]]
+  [ defender [x y]]
   (f/ok->> [x y]
            (is-on-board (get defender :board))
-           (shell (get defender :board) )
-           (is-sunk (get defender :board))
+           (mark-defender (get defender :board))
+           (merge defender)
+           (mark-sunk)
            )
 
   )
 
 
-(defn mark-defender [])
+(defn mark-defender
+  [board [x y]]
+  (let [res (->> [x y]
+                 (shell board)
+                 (mark-hit board [x y])
+                 )]
+    res
+           )
+  )
 
 
 (defn make-board
@@ -93,22 +101,38 @@
   [board [x y] ship]
   (assoc-in board [x y] ship))
 
+(defn mark-hit
+  "Place a ship on the board"
+  [board [x y] ship]
+  (pprint ship)
+  ( if ship
+    {:board (assoc-in board [x y] 1) :ship ship :message "Hit" }
+    {:board (assoc-in board [x y] 1) :ship ship :message "Miss"}
+    )
+  )
+
 
 
 (defn shell
   "mark a position"
    [board [x y]]
   (pprint board)
-  (let [loc (get-in board [y x])]
+  (let [loc (get-in board [x y])]
     (cond
     (=  loc "0") false
     (= loc "1") false
     :else loc))
   )
 
-(defn is-sunk
-  [board ship]
-  (not-any? #( = ship %) (flatten board))
+(defn mark-sunk
+  [{:keys [ship board fleet]}]
+  (if (not-any? #( = ship %) (flatten board))
+    {:ship ship :board board :fleet (update-in fleet  [(keyword ship)] dec ) :message "Sunk"} {:keys [ship board fleet]}
+
+    )
 )
+
+
+
 
 

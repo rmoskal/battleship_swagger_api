@@ -40,7 +40,8 @@
 
 (defn attack-move
   [attacker defender x y]
-  (attack attacker defender [x y])
+  (attack-defender defender [y x])
+
   )
 
 
@@ -49,14 +50,12 @@
 (place-move player_1 "destroyer" (:h direction) 0 1)
 (place-move player_1 "submarine"  (:h direction) 2 1)
 (place-move player_1 "carrier"  (:v direction)  0 2)
-(place-move player_1 "carrier"  (:v direction)  0 2)
-(place-move player_1 "harrier"  (:v direction)  0 2)
 (place-move player_1 "cruiser"  (:v direction)  3 2)
 (place-move player_1 "battleship"  (:h direction) 0 9)
-(place-move player_1 "battleship"  (:h direction) 0 9)
 
 
 
-(pprint(attack-move @player_2 @player_1  0 2))
+(pprint(attack-move @player_2 @player_1 2 1  ))
+(pprint(attack-move @player_2 @player_1 0 1  ))
 
 
