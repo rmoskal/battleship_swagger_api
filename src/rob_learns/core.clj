@@ -28,26 +28,14 @@
 
 (defn attack-defender
   "Attack the board"
-  [ defender [x y]]
-  (f/ok->> [x y]
-           (is-on-board (get defender :board))
-           (mark-defender (get defender :board))
-           (merge defender)
-           (mark-sunk)
-           )
-
-  )
+  [defender [x y]]
+  (f/if-let-failed? [result (f/ok->> [x y]
+           (is-on-board (:board defender))
+           (shell defender) )]
+   (assoc defender  :status {:error (:message result)})
+                    result))
 
 
-(defn mark-defender
-  [board [x y]]
-  (let [res (->> [x y]
-                 (shell board)
-                 (mark-hit board [x y])
-                 )]
-    res
-           )
-  )
 
 
 (defn make-board
@@ -101,36 +89,33 @@
   [board [x y] ship]
   (assoc-in board [x y] ship))
 
-(defn mark-hit
-  "Place a ship on the board"
-  [board [x y] ship]
-  (pprint ship)
-  ( if ship
-    {:board (assoc-in board [x y] 1) :ship ship :message "Hit" }
-    {:board (assoc-in board [x y] 1) :ship ship :message "Miss"}
-    )
-  )
-
+(def validate-game-)
 
 
 (defn shell
-  "mark a position"
-   [board [x y]]
-  (pprint board)
-  (let [loc (get-in board [x y])]
+  "shell me a ship, decrement the hit counter if hit "
+  [state [x y]]
+  (let [loc (get-in (:board state) [x y])]
     (cond
-    (=  loc "0") false
-    (= loc "1") false
-    :else loc))
-  )
+      (= loc "0") (assoc state :status {:success "Miss"} :board (assoc-in (:board state) [x y] 1))
+      (= loc "1") (f/fail "%s %s  is already been called" x y)
+      :else (let [state (assoc state :board (assoc-in (:board state) [x y] "1")
+                                     :fleet (update (:fleet state) (keyword loc) dec)
+                                     :status {:success (str "Hit " loc)})]
+             (mark-sunk state loc)
+             ))))
+
+
 
 (defn mark-sunk
-  [{:keys [ship board fleet]}]
-  (if (not-any? #( = ship %) (flatten board))
-    {:ship ship :board board :fleet (update-in fleet  [(keyword ship)] dec ) :message "Sunk"} {:keys [ship board fleet]}
+  [state loc]
+  (if (not-any? #(= loc %) (flatten (:board state)))
+    (assoc state :status {:success (str "Sunk " loc)})
+    state))
 
-    )
-)
+
+
+
 
 
 
