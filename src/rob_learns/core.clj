@@ -5,7 +5,7 @@
             [rob-learns.core :refer :all]))
 
 (declare place-on-board is-on-board is-not-taken validate-move, validate-placed validate-placable shell
-         mark-sunk mark-defender mark-hit)
+         mark-sunk mark-defender mark-hit is-setup)
 
 (defn fleet
   []
@@ -20,18 +20,21 @@
   "place a ship horizontally"
   [function fleet inventory board x y ship]
   (f/ok->> ship
-           ((partial validate-placable fleet))
-           ((partial validate-placed inventory))
+           (validate-placable fleet)
+           (validate-placed inventory)
            (function x y)
-           ((partial validate-many (partial validate-move board)))
+           (validate-many (partial validate-move board))
            (reduce (fn [a each] (place-on-board a each ship)) board)))
 
 (defn attack-defender
   "Attack the board"
-  [defender [x y]]
-  (f/if-let-failed? [result (f/ok->> [x y]
-           (is-on-board (:board defender))
-           (shell defender) )]
+  [attacker defender [x y]]
+  (f/if-let-failed? [result
+                   (f/ok->> [x y]
+                            (is-setup defender (name `defender))
+                            (is-setup attacker  (name `attacker))
+                            (is-on-board (:board defender))
+                            (shell defender) )]
    (assoc defender  :status {:error (:message result)})
                     result))
 
@@ -51,7 +54,7 @@
            (is-on-board board)))
 
 
-(defn get-coordinates-h
+(defn -coordinates-h
   "Get the horizontal coordinates for placing ship"
   [x y length]
   (map #(vec [y %]) (range x (+ x length))))
@@ -68,6 +71,14 @@
   [board [x y]]
   (if (get-in board [x y]) [x y]
                            (f/fail "%s %s  is not on board" x y)))
+
+(defn is-setup
+  "Checks whether a user is setup"
+  [user name [x y]]
+  (pprint  (:inventory user))
+  (if (empty? (:inventory user)) [x y]
+                           (f/fail "%s is not set up" name)))
+
 
 (defn validate-placed
   [fleet ship]
@@ -88,8 +99,6 @@
   "Place a ship on the board"
   [board [x y] ship]
   (assoc-in board [x y] ship))
-
-(def validate-game-)
 
 
 (defn shell

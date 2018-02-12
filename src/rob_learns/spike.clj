@@ -4,5 +4,5 @@
 (defn fib-seq []
   (map first (iterate fib-step [0 1])))
 
-(println(take 2 (fib-seq)))
+(println(take 20 (fib-seq)))
 

@@ -35,7 +35,7 @@
 
 (defn attack-move
   [attacker defender x y]
-  (let [res (attack-defender @defender [y x])]
+  (let [res (attack-defender @attacker @defender [y x])]
     (swap! attacker assoc :status (:status res))
     (reset! defender res)))
 
