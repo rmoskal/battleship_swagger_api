@@ -26,9 +26,9 @@
   [state ship direction x y]
   (let [result
         (f/ok->> ship
-                 ((partial place-ship direction  (:fleet @state) (:inventory @state) (:board @state) x y))
-                 ((partial set-game-state state (dissoc (:inventory @state) (keyword ship)) (:fleet @state)
-                            {:success"Placed a piece."})))]
+                 ( place-ship direction  (:fleet @state) (:inventory @state) (:board @state) x y)
+                 ( set-game-state state (dissoc (:inventory @state) (keyword ship)) (:fleet @state)
+                            {:success"Placed a piece."}))]
 
     (if (f/failed? result) (swap! state assoc :status {:error result}) result)))
 
