@@ -1,8 +1,7 @@
 (ns rob-learns.core
   (:use clojure.pprint)
   (:require [rob-learns.helpers :refer :all]
-            [failjure.core :as f]
-            [rob-learns.core :refer :all]))
+            [failjure.core :as f]))
 
 (declare place-on-board is-on-board is-not-taken validate-move, validate-placed validate-placable shell
          mark-sunk mark-defender mark-hit is-setup)
@@ -54,7 +53,7 @@
            (is-on-board board)))
 
 
-(defn -coordinates-h
+(defn get-coordinates-h
   "Get the horizontal coordinates for placing ship"
   [x y length]
   (map #(vec [y %]) (range x (+ x length))))

@@ -6,7 +6,7 @@
 
 (deftest a-test
   (testing "function is exported"
-    (is (true? (function? failjureize)))
+    (is (false? (function? failjureize)))
     (is (true? (failjureize "Is trrue?" identity  true)))
     (is ( f/failed? (failjureize "Is trrue?" identity  false)))))
 

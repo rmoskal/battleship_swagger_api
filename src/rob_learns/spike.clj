@@ -1,27 +1,16 @@
-(defn _foo
-  [arr]
-  (loop [working arr res []]
-    (if (empty? working) res
-                         (if (= (first working) (second working)) (recur (drop 2 working) res)
-                                                                  (recur (rest working) (conj res (first working)))))
-    ))
+(defn fizzBuzz [each]
+  (cond
+    (and (zero? (mod each 3)) (zero? (mod each 5))) "FizzBuzz"
+    (zero? (mod each 3)) "Fizz"
+    (zero? (mod each 5)) "Buzz"
+    :else each
+    )
+    )
 
-
-(defn foo
-  [arr]
-  (loop [current arr]
-    (println current)
-    (if (apply distinct? current) current
-                                  (recur (_foo current)))
-    ))
-
-
-
-(let [in (slurp *in*)]
-  (println (clojure.string/split in #"")))
-
-
-
-
-
-
+(->>(read-line)                 ; Reading input from STDIN
+   read-string
+   range
+   rest
+   (map fizzBuzz)
+   (clojure.string/join "\n")
+   println)

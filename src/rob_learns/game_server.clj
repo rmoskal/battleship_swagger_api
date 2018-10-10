@@ -8,7 +8,11 @@
 (def player_1 (atom nil))
 (def player_2 (atom nil))
 
-(def direction {:h get-coordinates-h :v get-coordinates-v})
+(defn get-atom
+  [name]
+  )
+
+(def directionfn {:h get-coordinates-h :v get-coordinates-v})
 
 
 (defn set-game-state
@@ -19,7 +23,8 @@
 (defn initialize-game
   []
   (set-game-state player_1  (fleet) (fleet) nil (make-board))
-  (set-game-state player_2  (fleet) (fleet) nil (make-board)))
+  (set-game-state player_2  (fleet) (fleet) nil (make-board))
+  (make-board))
 
 
 (defn place-move
@@ -40,15 +45,15 @@
     (reset! defender res)))
 
 
-;;
-;;
+;
+;
 
 ;(initialize-game)
-;(place-move player_1 "destroyer" (:h direction) 0 1)
-;(place-move player_1 "submarine"  (:h direction) 2 1)
-;(place-move player_1 "carrier"  (:v direction)  0 2)
-;(place-move player_1 "cruiser"  (:v direction)  3 2)
-;(place-move player_1 "battleship"  (:h direction) 0 9)
+;(place-move player_1 "destroyer" (:h directionfn) 0 1)
+;(place-move player_1 "submarine"  (:h directionfn) 2 1)
+;(place-move player_1 "carrier"  (:v directionfn)  0 2)
+;(place-move player_1 "cruiser"  (:v directionfn)  3 2)
+;(place-move player_1 "battleship"  (:h directionfn) 0 9)
 ;
 ;
 ;
