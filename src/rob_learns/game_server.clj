@@ -10,7 +10,9 @@
 
 (defn get-atom
   [name]
-  )
+  (cond (= name :player1  ) player_1
+        (= name :player2  ) player_2))
+
 
 (def directionfn {:h get-coordinates-h :v get-coordinates-v})
 
