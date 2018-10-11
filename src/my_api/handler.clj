@@ -3,17 +3,13 @@
             [ring.util.http-response :refer :all]
             [rob-learns.game-server :refer :all]
             [schema.core :as s]))
-
-
-
-
 (def app
   (api
     {:swagger
      {:ui   "/"
       :spec "/swagger.json"
       :data {:info {:title       "Who Sunk My Battleship!?"
-                    :description "Alloyed Test Api"}
+                    :description "MostMedia Test Api"}
              :tags [{:name "api", :description "Battleship game for two!"}]}}}
 
     (context "/api" []
